@@ -2,8 +2,8 @@
 
 > New here? Start with [HOW_TO_RUN.md](HOW_TO_RUN.md).
 
-This is the code from the post "Stop Embedding the Same Text Twice: Caching for Your RAG
-App" (Tech by Avanti). It is the [lesson 2](../lesson2/) app with two caches.
+This is the code from the post ["Stop Embedding the Same Text Twice: Caching for Your RAG
+App"](https://techbyavanti.substack.com/p/stop-embedding-the-same-text-twice) (Tech by Avanti). It is the [lesson 2](../lesson2/) app with two caches.
 
 | Cache | File | Key | Saves |
 |---|---|---|---|
