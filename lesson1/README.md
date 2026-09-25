@@ -3,7 +3,7 @@
 > New here? Start with [HOW_TO_RUN.md](HOW_TO_RUN.md).
 
 A small RAG app in about 60 lines of Python. This is the code from the post
-"I Turned My Three Steps Into a Small AI App. Here Is How." (Tech by Avanti).
+["One Laptop, Two Models, 60 Lines: Build Your First Mini RAG App"](https://techbyavanti.substack.com/p/one-laptop-two-models-60-lines-build) (Tech by Avanti).
 
 The app has four parts:
 

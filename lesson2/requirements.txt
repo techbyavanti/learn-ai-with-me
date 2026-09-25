@@ -1,0 +1,4 @@
+sentence-transformers>=3.0
+numpy>=1.26
+ollama>=0.4
+anthropic>=0.40
