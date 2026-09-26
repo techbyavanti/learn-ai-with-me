@@ -1,0 +1,4 @@
+# Tools to build and test the notebooks. The lessons do not need them.
+nbformat>=5.10
+nbconvert>=7.16
+ipykernel>=6.29
