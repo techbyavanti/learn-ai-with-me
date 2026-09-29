@@ -3,7 +3,7 @@
 > New here? Start with [HOW_TO_RUN.md](HOW_TO_RUN.md).
 
 This is the code from the post ["Your RAG App Will Make Things Up. Here Is How to Catch It."](https://techbyavanti.substack.com/p/your-rag-app-will-make-things-up)
-(Tech by Avanti). It is the [lesson 3](../lesson3/) app (with its two caches) and three
+(Tech by Avanti). It is the [lesson 3](../lesson3/) ([post](https://techbyavanti.substack.com/p/stop-embedding-the-same-text-twice)) app (with its two caches) and three
 guardrails: checks in normal code around the model.
 
 | Guardrail | When | What it does |

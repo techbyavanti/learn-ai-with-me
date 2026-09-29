@@ -3,6 +3,13 @@
 This repository contains the code for the blog posts on
 [Tech by Avanti](https://techbyavanti.substack.com/).
 
+## Start here
+
+The lessons build one app, step by step. These two posts explain the ideas behind them:
+
+1. [I Wanted to Learn AI Engineering. Here Is Where I Started.](https://techbyavanti.substack.com/p/i-wanted-to-learn-ai-engineering)
+2. [The 5 Design Patterns AI Developers Actually Use](https://techbyavanti.substack.com/p/the-5-design-patterns-ai-developers)
+
 ## Lessons
 
 | Folder | Post | What it builds |
@@ -11,8 +18,8 @@ This repository contains the code for the blog posts on
 | [`lesson2`](lesson2/) ([how to run](lesson2/HOW_TO_RUN.md)) | [Your RAG App Works on Notes. Then You Give It a Real Document.](https://techbyavanti.substack.com/p/your-rag-app-works-on-notes-then) | "Ask My Docs": chunking long documents, with an eval that compares four strategies |
 | [`lesson3`](lesson3/) ([how to run](lesson3/HOW_TO_RUN.md)) | [Stop Embedding the Same Text Twice: Caching for Your RAG App](https://techbyavanti.substack.com/p/stop-embedding-the-same-text-twice) | "Ask My Docs" with a vector cache and an answer cache, and a benchmark |
 | [`lesson4`](lesson4/) ([how to run](lesson4/HOW_TO_RUN.md)) | [Your RAG App Will Make Things Up. Here Is How to Catch It.](https://techbyavanti.substack.com/p/your-rag-app-will-make-things-up) | "Ask My Docs" with input, document, and output guardrails, and an eval that measures them |
-| [`lesson5`](lesson5/) ([how to run](lesson5/HOW_TO_RUN.md)) | One Search Is Not Always Enough: Build a Small Agent Loop | "Ask My Docs" with an agent: search and calculator tools, rules and limits in code, and an eval against one search |
-| [`lesson6`](lesson6/) ([how to run](lesson6/HOW_TO_RUN.md)) | From Script to Service: Load Once, Answer Many | "Ask My Docs" as a web service (FastAPI): load once, a health check, a web page, locks, and a load test |
+| [`lesson5`](lesson5/) ([how to run](lesson5/HOW_TO_RUN.md)) | [One Search Is Not Always Enough: Build a Small Agent Loop](https://techbyavanti.substack.com/p/one-search-is-not-always-enough-build) | "Ask My Docs" with an agent: search and calculator tools, rules and limits in code, and an eval against one search |
+| [`lesson6`](lesson6/) ([how to run](lesson6/HOW_TO_RUN.md)) | From Script to Service: Load Once, Answer Many (post coming soon) | "Ask My Docs" as a web service (FastAPI): load once, a health check, a web page, locks, and a load test |
 
 Each lesson has its own README, `requirements.txt`, and a `setup.sh` / `check.sh` pair:
 

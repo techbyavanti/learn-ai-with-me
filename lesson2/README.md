@@ -3,7 +3,7 @@
 > New here? Start with [HOW_TO_RUN.md](HOW_TO_RUN.md).
 
 This is the code from the post ["Your RAG App Works on Notes. Then You Give It a Real
-Document."](https://techbyavanti.substack.com/p/your-rag-app-works-on-notes-then) (Tech by Avanti). It is the [lesson 1](../lesson1/) app, changed for long
+Document."](https://techbyavanti.substack.com/p/your-rag-app-works-on-notes-then) (Tech by Avanti). It is the [lesson 1](../lesson1/) ([post](https://techbyavanti.substack.com/p/one-laptop-two-models-60-lines-build)) app, changed for long
 documents.
 
 Lesson 1 used short notes: one fact, one chunk. Real documents are long and talk about

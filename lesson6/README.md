@@ -3,7 +3,7 @@
 > New here? Start with [HOW_TO_RUN.md](HOW_TO_RUN.md).
 
 This is the code from the post "From Script to Service: Load Once, Answer Many"
-(Tech by Avanti). It is the [lesson 5](../lesson5/) app as a web service: one process loads
+(Tech by Avanti). It is the [lesson 5](../lesson5/) ([post](https://techbyavanti.substack.com/p/one-search-is-not-always-enough-build)) app as a web service: one process loads
 the documents, the vectors, the encoder, and the model one time, then answers many people.
 
 | Part | What it does |

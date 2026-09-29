@@ -2,8 +2,8 @@
 
 > New here? Start with [HOW_TO_RUN.md](HOW_TO_RUN.md).
 
-This is the code from the post "One Search Is Not Always Enough: Build a Small Agent Loop"
-(Tech by Avanti). It is the [lesson 4](../lesson4/) app (caches and guardrails) with an agent:
+This is the code from the post ["One Search Is Not Always Enough: Build a Small Agent Loop"](https://techbyavanti.substack.com/p/one-search-is-not-always-enough-build)
+(Tech by Avanti). It is the [lesson 4](../lesson4/) ([post](https://techbyavanti.substack.com/p/your-rag-app-will-make-things-up)) app (caches and guardrails) with an agent:
 the model decides when to search, when to calculate, and when to answer.
 
 | Part | What it does |
