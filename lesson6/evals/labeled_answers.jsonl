@@ -1,0 +1,29 @@
+{"question": "How long until I get my money back?", "answer": "According to the documents, if your refund request is approved, the money goes back to your card in 5 to 7 business days.", "label": "correct", "note": "real"}
+{"question": "How much is the yearly plan?", "answer": "The yearly plan costs 10 dollars for each user, each month.", "label": "correct", "note": "real"}
+{"question": "How fast do you reply on the paid plan?", "answer": "You reply to customers on the paid plan in 4 hours on business days.", "label": "correct", "note": "real"}
+{"question": "When is live chat open?", "answer": "Live chat is available on the paid plan from 9:00 to 17:00 Central European Time, Monday to Friday.", "label": "correct", "note": "real"}
+{"question": "How long is an invitation valid?", "answer": "Invitations are valid for 7 days.", "label": "correct", "note": "real"}
+{"question": "Is there a discount for schools?", "answer": "Yes, schools get a discount of 50 percent.", "label": "correct", "note": "real"}
+{"question": "We have 15 users on the paid plan. Can we use single sign-on?", "answer": "No, with the paid plan, single sign-on (SSO) is only available for workspaces with more than 20 users. Since you have 15 users, SSO cannot be used.", "label": "correct", "note": "real"}
+{"question": "For 5 users, how much do we save in one year with the yearly plan instead of the monthly plan?", "answer": "With the yearly plan for 5 users, you save $120 in one year compared to the monthly plan.", "label": "correct", "note": "real, needs a calculation"}
+{"question": "What happens if my card payment fails?", "answer": "If a card payment fails, the system will try again after 3 days and after 7 days. If the third try fails, your workspace will change to the free plan.", "label": "correct", "note": "real"}
+{"question": "Can I keep my data in the United States?", "answer": "Yes. On the paid plan, you can select a data center in the United States when you create the workspace.", "label": "correct", "note": "real"}
+{"question": "How often do you back up my data?", "answer": "You are backed up every 6 hours.", "label": "correct", "note": "real"}
+{"question": "How long is a password reset link valid?", "answer": "According to the documents, a password reset link is valid for one hour.", "label": "correct", "note": "real"}
+{"question": "What happens if my card payment fails?", "answer": "If a card payment fails, you will have three attempts to retry the payment. If the third attempt fails, your workspace will be switched to the free plan.", "label": "wrong", "note": "real: 2 retries, not 3"}
+{"question": "Can I restore a project that I deleted?", "answer": "No, you cannot restore a project that you deleted.", "label": "wrong", "note": "real: you can, for 30 days"}
+{"question": "How much does a nonprofit with 8 users pay for one year on the yearly plan?", "answer": "A nonprofit with 8 users pays $960 for one year on the yearly plan.", "label": "wrong", "note": "real: forgot the 50% discount (480)"}
+{"question": "A school has 30 users on the monthly paid plan. How much does it pay each month after the school discount?", "answer": "The school pays $324 each month after the school discount.", "label": "wrong", "note": "real: 10% instead of 50% (180)"}
+{"question": "I deleted a project 10 days ago. How many days do I have left to restore it?", "answer": "You have 17 days left to restore the deleted project.", "label": "wrong", "note": "real: 20 days"}
+{"question": "How long until I get my money back?", "answer": "You get your money back in 10 to 14 business days.", "label": "wrong", "note": "made up"}
+{"question": "How long until I get my money back?", "answer": "Refunds are paid in cash at our office.", "label": "wrong", "note": "made up"}
+{"question": "Can I download my data?", "answer": "You can export your data as a PDF file from the Account page.", "label": "wrong", "note": "made up"}
+{"question": "Is there a discount for schools?", "answer": "Schools get a free plan for life.", "label": "wrong", "note": "made up"}
+{"question": "When is live chat open?", "answer": "Live chat is open 24 hours a day, 7 days a week.", "label": "wrong", "note": "made up"}
+{"question": "Is there parking at the office?", "answer": "We offer free valet parking for all visitors.", "label": "wrong", "note": "made up"}
+{"question": "Can I pay by bank transfer?", "answer": "We also accept payment with Bitcoin and PayPal.", "label": "wrong", "note": "made up"}
+{"question": "Which identity providers work with SSO?", "answer": "SSO works with Okta, Auth0, and Keycloak.", "label": "wrong", "note": "made up"}
+{"question": "How often do you back up my data?", "answer": "We back up your data every night and keep the backups forever.", "label": "wrong", "note": "made up"}
+{"question": "What is the phone number for support?", "answer": "You can call support at 555-0100.", "label": "wrong", "note": "made up"}
+{"question": "Does the phone app work without internet?", "answer": "The app needs an internet connection at all times.", "label": "wrong", "note": "made up"}
+{"question": "How long is an invitation valid?", "answer": "Invitations never expire.", "label": "wrong", "note": "made up"}

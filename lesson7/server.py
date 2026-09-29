@@ -1,7 +1,8 @@
-"""Ask My Docs as a web service.
+"""Ask My Docs as a web app.
 
-The service loads everything one time when it starts: the documents, the vectors, the
-encoder, and the model. Then it answers questions from many people.
+The server loads everything one time when it starts: the documents, the vectors, the
+encoder, and the model. Then it answers questions from many people, through an API
+(/ask, /health) and a web page (static/index.html).
 
 Start it:  uvicorn server:app --port 8000
 Ask:       curl -s localhost:8000/ask -H 'Content-Type: application/json' \
@@ -13,9 +14,10 @@ import os
 import threading
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 import app as core
@@ -26,6 +28,8 @@ from cache import AnswerCache, make_key
 MAX_BUSY = int(os.environ.get("MAX_BUSY", "2"))
 # A question that waits longer than this gets "busy, try again" (HTTP 503).
 QUEUE_TIMEOUT = float(os.environ.get("QUEUE_TIMEOUT", "60"))
+
+STATIC = Path(__file__).parent / "static"
 
 state = {}
 model_slots = threading.BoundedSemaphore(MAX_BUSY)
@@ -160,45 +164,7 @@ def _reply(q, answer, guard, steps, start, cached):
     return reply
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 def page():
-    """A small page to ask questions in the browser."""
-    return PAGE
-
-
-PAGE = """<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ask My Docs</title>
-<style>
-  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
-  textarea { width: 100%; height: 80px; font: inherit; padding: 8px; box-sizing: border-box; }
-  button { font: inherit; padding: 8px 16px; margin-top: 8px; }
-  #answer { white-space: pre-wrap; margin-top: 24px; }
-  .meta { color: #666; font-size: 0.9em; }
-</style></head>
-<body>
-<h1>Ask My Docs</h1>
-<textarea id="q" maxlength="500">How long until I get my money back?</textarea>
-<label><input type="checkbox" id="agent" checked> Use the agent (search more than once, calculate)</label><br>
-<button onclick="ask()">Ask</button>
-<div id="answer"></div>
-<script>
-async function ask() {
-  const out = document.getElementById("answer");
-  out.textContent = "Thinking...";
-  const mode = document.getElementById("agent").checked ? "agent" : "single";
-  const r = await fetch("/ask", {method: "POST", headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({question: document.getElementById("q").value, mode, steps: true})});
-  const data = await r.json();
-  if (!r.ok) { out.textContent = data.detail || "Error"; return; }
-  const steps = (data.steps || []).map(s => "- " + s).join("\\n");
-  out.innerHTML = "";
-  out.append(data.answer);
-  const meta = document.createElement("p");
-  meta.className = "meta";
-  meta.textContent = `${data.seconds} s${data.cached ? " (from the cache)" : ""}` + (steps ? "\\n" + steps : "");
-  out.append(meta);
-}
-</script>
-</body></html>
-"""
+    """The app that people use: one HTML page that calls /health and /ask."""
+    return FileResponse(STATIC / "index.html")

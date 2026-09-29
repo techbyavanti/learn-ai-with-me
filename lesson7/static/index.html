@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask My Docs</title>
+<style>
+  :root { --bg: #fafaf9; --card: #ffffff; --text: #1c1917; --quiet: #78716c; --line: #e7e5e4; --accent: #2563eb; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1c1917; --card: #292524; --text: #f5f5f4; --quiet: #a8a29e; --line: #44403c; --accent: #60a5fa; }
+  }
+  body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text);
+         max-width: 720px; margin: 0 auto; padding: 24px 16px; line-height: 1.5; }
+  h1 { margin: 0 0 4px; font-size: 1.5rem; }
+  #status { color: var(--quiet); font-size: 0.9rem; margin-bottom: 20px; }
+  form { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  textarea { width: 100%; min-height: 64px; font: inherit; color: inherit; background: transparent;
+             border: 0; resize: vertical; outline: none; box-sizing: border-box; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+  label { color: var(--quiet); font-size: 0.9rem; }
+  button { font: inherit; padding: 6px 18px; border: 0; border-radius: 8px; background: var(--accent);
+           color: white; cursor: pointer; }
+  button:disabled { opacity: 0.5; cursor: wait; }
+  .qa { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin-top: 16px; }
+  .question { font-weight: 600; }
+  .answer { white-space: pre-wrap; margin-top: 6px; }
+  .meta, details { color: var(--quiet); font-size: 0.85rem; margin-top: 8px; }
+  details ul { margin: 4px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<h1>Ask My Docs</h1>
+<div id="status">Connecting...</div>
+
+<form id="form">
+  <textarea id="question" maxlength="500" placeholder="Ask a question about the help guide" required></textarea>
+  <div class="row">
+    <label><input type="checkbox" id="agent" checked> Use the agent (searches more than once, calculates)</label>
+    <button id="ask">Ask</button>
+  </div>
+</form>
+
+<div id="history"></div>
+
+<script>
+// 1. Show if the app is ready, with GET /health.
+async function showStatus() {
+  const status = document.getElementById("status");
+  try {
+    const health = await (await fetch("/health")).json();
+    const n = health.questions_served;
+    status.textContent = `Ready: ${health.chunks} sections of the help guide, model ${health.agent_model}, ` +
+                         `${n} ${n === 1 ? "question" : "questions"} answered`;
+  } catch {
+    status.textContent = "The app is not reachable.";
+  }
+}
+
+// 2. Send the question to POST /ask, and show the answer at the top of the history.
+async function ask(event) {
+  event.preventDefault();
+  const question = document.getElementById("question").value.trim();
+  if (!question) return;
+  const mode = document.getElementById("agent").checked ? "agent" : "single";
+  const button = document.getElementById("ask");
+  button.disabled = true;
+  button.textContent = "Thinking...";
+  const card = addCard(question);
+  try {
+    const response = await fetch("/ask", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({question, mode, steps: true}),
+    });
+    const data = await response.json();
+    if (response.status === 503) {
+      fill(card, "The app is busy right now. Please try again in a moment.");
+    } else if (!response.ok) {
+      fill(card, "Something went wrong: " + (data.detail || response.status));
+    } else {
+      fill(card, data.answer, data);
+    }
+  } catch {
+    fill(card, "The app is not reachable.");
+  }
+  button.disabled = false;
+  button.textContent = "Ask";
+  showStatus();
+}
+
+function addCard(question) {
+  const card = document.createElement("div");
+  card.className = "qa";
+  const q = document.createElement("div");
+  q.className = "question";
+  q.textContent = question;  // textContent, never innerHTML: the text is shown, never run
+  const a = document.createElement("div");
+  a.className = "answer";
+  a.textContent = "...";
+  card.append(q, a);
+  document.getElementById("history").prepend(card);
+  return card;
+}
+
+function fill(card, answer, data) {
+  card.querySelector(".answer").textContent = answer;
+  if (!data) return;
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = `${data.mode === "agent" ? "Agent" : "One search"} · ${data.seconds} s` +
+                     (data.cached ? " · from the cache" : "");
+  card.append(meta);
+  addList(card, "How the agent worked", data.steps);
+  addList(card, "What the guardrails found", data.guard);
+}
+
+function addList(card, title, items) {
+  if (!items || !items.length) return;
+  const details = document.createElement("details");
+  const summary = document.createElement("summary");
+  summary.textContent = `${title} (${items.length})`;
+  const list = document.createElement("ul");
+  for (const item of items) {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.append(li);
+  }
+  details.append(summary, list);
+  card.append(details);
+}
+
+document.getElementById("form").addEventListener("submit", ask);
+document.getElementById("question").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) ask(e);  // Enter asks, Shift+Enter makes a new line
+});
+showStatus();
+
+// A link like /?q=How+long+until+I+get+my+money+back%3F asks that question at once.
+const shared = new URLSearchParams(location.search).get("q");
+if (shared) {
+  document.getElementById("question").value = shared;
+  document.getElementById("form").requestSubmit();
+}
+</script>
+</body>
+</html>

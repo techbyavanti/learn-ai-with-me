@@ -12,23 +12,22 @@ md = nbf.v4.new_markdown_cell
 code = nbf.v4.new_code_cell
 
 cells = [
-md("""# One Eval for Everything, on Google Cloud
+md("""# Ask My Docs as a Web App on Google Cloud
 
-This notebook runs the lesson 6 eval from
+This notebook runs the lesson 7 web app from
 [learn-ai-with-me](https://github.com/techbyavanti/learn-ai-with-me) on Google Cloud.
 It works in **Vertex AI Workbench** and in **Colab Enterprise**.
 
-Lesson 6 builds one eval for the whole app: a test set of 28 questions, graders in code,
-repeated runs, a check of a judge model, and a baseline that catches regressions.
+Lesson 7 turns the script into a **web app**: one process loads the documents, the encoder,
+and the model one time, then answers questions from many people.
 
-| Kind | Cases | A good result |
-|---|---|---|
-| simple | 12 | The fact from one section |
-| multi-step | 6 | The correct number |
-| unanswerable | 6 | "I do not know" |
-| attack | 4 | Blocked |
+| Endpoint | What it does |
+|---|---|
+| `POST /ask` | Answers a question (`mode`: `agent` or `single`) |
+| `GET /health` | Says that the service is up, and what it loaded |
+| `GET /` | A small web page to ask questions |
 
-**Machine:** 4 vCPUs and 16 GB RAM is enough. A GPU makes the eval faster.
+**Machine:** 4 vCPUs and 16 GB RAM is enough. A GPU makes the model (and the load test) faster.
 
 Run the cells from top to bottom."""),
 
@@ -41,7 +40,7 @@ REPO = "https://github.com/techbyavanti/learn-ai-with-me.git"
 if not os.path.exists("app.py"):
     if not os.path.exists("learn-ai-with-me"):
         subprocess.run(["git", "clone", "--depth", "1", REPO], check=True)
-    os.chdir("learn-ai-with-me/lesson6")
+    os.chdir("learn-ai-with-me/lesson7")
 
 print("Working folder:", os.getcwd())
 print(sorted(os.listdir(".")))"""),
@@ -116,37 +115,64 @@ print("Frontier model enabled:", bool(os.environ.get("ANTHROPIC_API_KEY")))"""),
 code("""# Download the local model (skipped if it is already there).
 subprocess.run(["ollama", "pull", LOCAL_MODEL], check=True)"""),
 
-md("## 5. Run the eval\n\n28 cases, 3 runs, one search. The first run downloads the encoder."),
-code("""subprocess.run([sys.executable, "eval_app.py", "--runs", "3"], check=True)"""),
-
-md("## 6. Every answer, graded\n\nOne run, with the answer and the reason for every case."),
-code("""subprocess.run([sys.executable, "eval_app.py", "--runs", "1", "-v"], check=True)"""),
-
-md("## 7. Can you trust a judge?\n\nThe judge from lesson 4 grades 29 answers that were labeled by hand."),
-code("""subprocess.run([sys.executable, "eval_judge.py", "--models", LOCAL_MODEL, "-v"], check=True)"""),
-
-md("## 8. A bad change\n\nThe fixed chunks from lesson 2, compared with the baseline. The compare should fail and name the questions that broke."),
-code("""result = subprocess.run([sys.executable, "eval_app.py", "--strategy", "fixed", "--compare"])
-print("The compare failed, as it should." if result.returncode else "The compare passed.")"""),
-
-md("## 9. Your own test case\n\nAdd one line to a copy of the test set, then run the eval with it."),
+md("## 5. Start the service\n\nThe service runs in the background on a free port. The first start downloads the encoder."),
 code("""import json
-import shutil
+import socket
+import time
+import urllib.request
 
-# Work on a copy, so that the test set in the repository stays the same.
-shutil.copy("evals/evalset.jsonl", "my_evalset.jsonl")
-case = {"id": "s13", "kind": "simple", "question": "Can guests create projects?",
-        "expect": "answer", "facts": ["cannot"], "sources": ["Invite your team"]}
-with open("my_evalset.jsonl", "a") as f:
-    f.write(json.dumps(case) + "\\n")
-subprocess.run([sys.executable, "eval_app.py", "--evalset", "my_evalset.jsonl", "--runs", "1", "-v"], check=True)"""),
+# Pick a free port, so that the service does not collide with another program.
+with socket.socket() as s:
+    s.bind(("localhost", 0))
+    PORT = s.getsockname()[1]
+URL = f"http://localhost:{PORT}"
+
+server_log = open("server.log", "w")
+server = subprocess.Popen([sys.executable, "-m", "uvicorn", "server:app", "--port", str(PORT)],
+                          stdout=server_log, stderr=subprocess.STDOUT)
+for _ in range(180):
+    if server.poll() is not None:
+        raise RuntimeError("The service stopped:\\n" + open("server.log").read())
+    try:
+        urllib.request.urlopen(f"{URL}/health", timeout=2)
+        break
+    except OSError:
+        time.sleep(1)
+print("Service on", URL)
+print([line for line in open("server.log").read().splitlines() if "Ready" in line])"""),
+
+md("## 6. Health check"),
+code("""print(json.load(urllib.request.urlopen(f"{URL}/health")))"""),
+
+md("## 7. Ask a question"),
+code("""def ask(question, mode="single", steps=False):
+    body = json.dumps({"question": question, "mode": mode, "steps": steps}).encode()
+    request = urllib.request.Request(f"{URL}/ask", data=body,
+                                     headers={"Content-Type": "application/json"})
+    return json.load(urllib.request.urlopen(request, timeout=300))
+
+print(ask("How long until I get my money back?"))
+print(ask("For 5 users, how much do we save in one year with the yearly plan instead of the monthly plan?",
+          mode="agent", steps=True))"""),
+
+md("## 8. The load test\n\n16 questions with 1, 4, and 8 people asking at the same time."),
+code("""subprocess.run([sys.executable, "load_test.py", "--url", URL, "--users", "1", "4", "8"], check=True)"""),
+
+md("## 9. The same questions again (from the cache)"),
+code("""subprocess.run([sys.executable, "load_test.py", "--url", URL, "--users", "8",
+                "--repeat", "--suffix", " (warm)"], check=True)
+subprocess.run([sys.executable, "load_test.py", "--url", URL, "--users", "8",
+                "--repeat", "--suffix", " (warm)"], check=True)"""),
 
 md("""## 10. Clean up
 
 Stop Ollama. To start again without the caches, delete the `.cache` folder.
 When you are done, **stop the Workbench instance or the Colab runtime**
 so that Google Cloud does not keep charging for it."""),
-code("""if "ollama_process" in globals():
+code("""if "server" in globals():
+    server.terminate()
+    print("Service stopped.")
+if "ollama_process" in globals():
     ollama_process.terminate()
     print("Ollama stopped.")"""),
 ]
@@ -159,4 +185,4 @@ nb = nbf.v4.new_notebook(cells=cells, metadata={
 for i, cell in enumerate(nb.cells):
     cell.id = f"cell-{i:02d}"
 
-nbf.write(nb, Path(__file__).parent / "ask_my_docs_evals_gcp.ipynb")
+nbf.write(nb, Path(__file__).parent / "ask_my_docs_app_gcp.ipynb")

@@ -19,7 +19,8 @@ The lessons build one app, step by step. These two posts explain the ideas behin
 | [`lesson3`](lesson3/) ([how to run](lesson3/HOW_TO_RUN.md)) | [Stop Embedding the Same Text Twice: Caching for Your RAG App](https://techbyavanti.substack.com/p/stop-embedding-the-same-text-twice) | "Ask My Docs" with a vector cache and an answer cache, and a benchmark |
 | [`lesson4`](lesson4/) ([how to run](lesson4/HOW_TO_RUN.md)) | [Your RAG App Will Make Things Up. Here Is How to Catch It.](https://techbyavanti.substack.com/p/your-rag-app-will-make-things-up) | "Ask My Docs" with input, document, and output guardrails, and an eval that measures them |
 | [`lesson5`](lesson5/) ([how to run](lesson5/HOW_TO_RUN.md)) | [One Search Is Not Always Enough: Build a Small Agent Loop](https://techbyavanti.substack.com/p/one-search-is-not-always-enough-build) | "Ask My Docs" with an agent: search and calculator tools, rules and limits in code, and an eval against one search |
-| [`lesson6`](lesson6/) ([how to run](lesson6/HOW_TO_RUN.md)) | From Script to Service: Load Once, Answer Many (post coming soon) | "Ask My Docs" as a web service (FastAPI): load once, a health check, a web page, locks, and a load test |
+| [`lesson6`](lesson6/) ([how to run](lesson6/HOW_TO_RUN.md)) | How Do You Know Your AI App Got Better? Build One Eval for Everything (post coming soon) | One eval for the whole app: a test set, graders, repeated runs, a judge check, and a baseline that catches regressions |
+| [`lesson7`](lesson7/) ([how to run](lesson7/HOW_TO_RUN.md)) | From Script to App: Turn Your RAG Script Into a Web App (post coming soon) | "Ask My Docs" as a web app: load once, an API, a web page, safe for many people, and a load test |
 
 Each lesson has its own README, `requirements.txt`, and a `setup.sh` / `check.sh` pair:
 

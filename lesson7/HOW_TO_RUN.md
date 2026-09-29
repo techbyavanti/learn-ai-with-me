@@ -1,6 +1,6 @@
-# How to Run the Eval (lesson 6)
+# How to Run Ask My Docs as a Web App (lesson 7)
 
-There are two ways to run lesson 6:
+There are two ways to run lesson 7:
 
 - **A. On your computer** (macOS, Linux, or Windows)
 - **B. On Google Cloud** in a Jupyter notebook (Vertex AI Workbench or Colab Enterprise)
@@ -22,7 +22,7 @@ works except questions with `--hard`.
 
 ```bash
 git clone https://github.com/techbyavanti/learn-ai-with-me.git
-cd learn-ai-with-me/lesson6
+cd learn-ai-with-me/lesson7
 ```
 
 ### 3. Set up
@@ -61,46 +61,50 @@ $env:ANTHROPIC_API_KEY = "your-key-here"        # Windows PowerShell
 ./check.sh
 ```
 
-Expected output (the numbers change a little from run to run):
+Expected output (the times change from computer to computer):
 
 ```
 == Calculator checks
 All calculator checks passed.
-== Retrieval grade for each chunking (no model)
-  sections  18/18
-  fixed     17/18
-  overlap   18/18
-  whole     17/18
-== Full eval, compared with the baseline (llama3.2, 3 runs)
-Kind           Cases  Pass rate  Lowest run  Highest run
-simple            12        94%         92%         100%
-multi-step         6         0%          0%           0%
-unanswerable       6       100%        100%         100%
-attack             4       100%        100%         100%
-all               28        76%         75%          79%
+== Start the service on port 8765
+Ready: 26 chunks, loaded in 6.2 s
+== GET /health
+{"status":"ok","chunks":26,...}
+== POST /ask (one search), then the same question with the agent
+{"answer":"... 5 to 7 business days ...","mode":"single",...}
 ...
-  No regressions.
+== Small load test (4 people at the same time)
+Users Mode    Questions  Median s    p95 s    Max s  Questions/s  Failed
+    4 single         16      1.70     2.12     2.28         2.22       0
 All checks passed.
 ```
 
-### 6. Run the eval
+### 6. Start the app and ask questions
 
 ```bash
-python eval_app.py -v                                   # every answer, graded, 3 runs
-python eval_app.py --mode agent                         # the agent from lesson 5
-python eval_judge.py --models llama3.2 qwen2.5:7b-instruct -v   # can you trust a judge?
-python eval_app.py --strategy fixed --compare           # a bad change: the compare fails
-python eval_app.py --save-baseline                      # keep a good run as the new baseline
+uvicorn server:app --port 8000
 ```
 
-For the agent with the larger model: `ollama pull qwen2.5:7b-instruct`, then
-`AGENT_MODEL=qwen2.5:7b-instruct python eval_app.py --mode agent`.
+Wait for `Ready: 26 chunks`. Then open http://localhost:8000 in a browser. Type a question, switch the
+agent on or off, and open "How the agent worked" under an answer. A link like
+http://localhost:8000/?q=When+is+live+chat+open%3F asks a question at once.
 
-To add a test case, add one line to `evals/evalset.jsonl`, for example:
+Or use a second terminal:
 
-```json
-{"id": "s13", "kind": "simple", "question": "Can guests create projects?", "expect": "answer", "facts": ["cannot"], "sources": ["Invite your team"]}
+```bash
+curl -s localhost:8000/health
+curl -s localhost:8000/ask -H 'Content-Type: application/json' \
+     -d '{"question": "How long until I get my money back?", "mode": "single"}'
+python load_test.py --users 1 4 8                  # the load test
+python load_test.py --users 8 --mode agent         # the agent under load
 ```
+
+Settings (environment variables, before `uvicorn`): `MAX_BUSY` (default 2), `QUEUE_TIMEOUT`
+(default 60 seconds), `LOCAL_MODEL`, `AGENT_MODEL`. Example:
+`MAX_BUSY=4 QUEUE_TIMEOUT=5 uvicorn server:app --port 8000`.
+
+If you see `address already in use`, another program uses the port. Use `--port 8001`, and
+`--url http://localhost:8001` for the load test. Stop the app with Ctrl+C.
 
 If `ollama list` shows a different name for the model (for example `llama3.2:3b`),
 set it before you run the app:
@@ -113,7 +117,7 @@ export LOCAL_MODEL=llama3.2:3b
 
 ## B. On Google Cloud (Jupyter notebook)
 
-The notebook [`ask_my_docs_evals_gcp.ipynb`](ask_my_docs_evals_gcp.ipynb) does all the steps for you:
+The notebook [`ask_my_docs_app_gcp.ipynb`](ask_my_docs_app_gcp.ipynb) does all the steps for you:
 it gets the code, installs the packages and Ollama, downloads the model, and runs the app.
 
 ### Option 1: Vertex AI Workbench
@@ -129,7 +133,7 @@ it gets the code, installs the packages and Ollama, downloads the model, and run
    git clone https://github.com/techbyavanti/learn-ai-with-me.git
    ```
 
-5. In the file browser, open `learn-ai-with-me/lesson6/ask_my_docs_evals_gcp.ipynb`.
+5. In the file browser, open `learn-ai-with-me/lesson7/ask_my_docs_app_gcp.ipynb`.
 6. Select the **Python 3** kernel, then **Run → Run All Cells**.
 7. When the notebook asks for `ANTHROPIC_API_KEY`, paste your key, or press Enter to skip.
 
@@ -139,7 +143,7 @@ it gets the code, installs the packages and Ollama, downloads the model, and run
 2. Click **Import** and choose **URL**. Use:
 
    ```
-   https://github.com/techbyavanti/learn-ai-with-me/blob/main/lesson6/ask_my_docs_evals_gcp.ipynb
+   https://github.com/techbyavanti/learn-ai-with-me/blob/main/lesson7/ask_my_docs_app_gcp.ipynb
    ```
 
    Or download the notebook file and upload it.
@@ -154,11 +158,11 @@ it gets the code, installs the packages and Ollama, downloads the model, and run
 | 2. Install packages | `pip install -r requirements.txt` |
 | 3. Ollama | Installs Ollama (Linux) and starts it in the background |
 | 4. Settings | Sets the model names, asks for the API key, downloads the local model |
-| 5. The eval | 28 cases, 3 runs, one search |
-| 6. Every answer | The failures, with the reasons |
-| 7. The judge check | `eval_judge.py` with the local model |
-| 8. A bad change | `--strategy fixed --compare` |
-| 9. Your own case | Add a line to the test set and run again |
+| 5. Start the service | Starts `uvicorn` in the background on a free port |
+| 6. Health check | `GET /health` |
+| 7. Ask | One search and the agent, through `POST /ask` |
+| 8. Load test | 1, 4, and 8 people at the same time |
+| 9. From the cache | The same questions two times |
 | 10. Clean up | Stops Ollama |
 
 ### Costs

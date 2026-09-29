@@ -4,3 +4,5 @@ __pycache__/
 .DS_Store
 .cache/
 server.log
+lesson*/evals/results/
+my_evalset.jsonl
